@@ -1,5 +1,6 @@
 const fs = require("fs");
 const inquirer = require("inquirer");
+const { cwd } = require("process");
 const generateMarkdown = require("./utils/markdown");
 
 function getLicense(value){
@@ -64,5 +65,57 @@ const questions = [
         validate: validateInput,
     },
 
-    
-]
+    {
+        type: "input",
+        name: "credit",
+        message: "How would users credit your project?",
+        validate: validateInput,
+    },
+
+    {
+        type: "input",
+        name: "testing",
+        message: "How would users test your project?",
+        validate: validateInput,
+    },
+
+
+    {
+        type: "input",
+        name: "username",
+        message: "Enter your github username",
+        validate: validateInput,
+    },
+
+    {
+        type: "input",
+        name: "email",
+        message: "Enter your email address",
+        validate: function (value){
+            if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(value)) {
+                return true;
+            } else {
+                return "Try again";
+            }
+        },
+    },
+];
+
+
+function write(name, data){
+    fs.writeFile(name, Markdown(data), function(err){
+        if (err) { 
+            return console.log(err);
+        }
+    });
+}
+
+function init(){
+    inquirer.createPromptModule(questions).then((data) => {
+        console.log(JSON.stringify(data, null, " "));
+        data.getLicense = getLicense(data.license);
+        writeToFile("./ProReadmeExamples/README.md", data);
+    });
+}
+
+init();
